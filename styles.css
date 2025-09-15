@@ -1,0 +1,424 @@
+/* Font import (Google Fonts) */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family= Karla:wght@400&display=swap');
+
+/* ===========================
+   General Page Styles
+   =========================== */
+body {
+    background: radial-gradient(circle, #111111, #0b0b0b);
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+canvas {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+/* ===========================
+   Intro Section
+   =========================== */
+#intro {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    text-align: center;
+    color: rgb(234, 234, 234);
+    font-size: clamp(1rem, 2.5vw, 2rem); 
+    font-weight: 400;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15), 2px 2px 4px rgba(0, 0, 0, 0.2), 
+                 3px 3px 6px rgba(0, 0, 0, 0.25), 4px 4px 8px rgba(0, 0, 0, 0.3),
+                 5px 5px 10px rgba(0, 0, 0, 0.35);
+    transition: transform 0.4s ease, text-shadow 0.4s ease;
+    width: 90vw; /* Set a wider width */
+    max-width: 800px; /* Optional: Add a maximum width */
+}
+
+#intro h1 {
+    font-size: clamp(2rem, 8vw, 5rem); /* Adjust the minimum, responsive, and maximum sizes */
+    font-weight: 900;
+    letter-spacing: 0.01em;
+    line-height: 0.75em;
+    color: #ffffff;
+    margin: 0;
+    text-align: center;
+}
+
+#intro h1:hover {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15), 2px 2px 4px rgba(0, 0, 0, 0.2), 
+                 3px 3px 6px rgba(0, 0, 0, 0.25), 4px 4px 8px rgba(0, 0, 0, 0.3),
+                 5px 5px 10px rgba(0, 0, 0, 0.35), 6px 6px 12px rgba(0, 0, 0, 0.4),
+                 8px 8px 14px rgba(0, 0, 0, 0.45);
+    transform: scale(1.05);
+}
+
+#intro p {
+    font-size: clamp(.75rem, 2vw, 1.5rem); /* Adjust the minimum, responsive, and maximum sizes */
+    font-family: 'Karla', sans-serif;;
+    color: rgb(234, 234, 234);
+    font-weight: 400;
+    text-align: center;
+    margin-top: 0.5em;
+    line-height: 1;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15), 2px 2px 4px rgba(0, 0, 0, 0.2), 
+                 3px 3px 6px rgba(0, 0, 0, 0.25), 4px 4px 8px rgba(0, 0, 0, 0.3),
+                 5px 5px 10px rgba(0, 0, 0, 0.35);
+}
+
+
+/* ===========================
+   Project Card Section
+   =========================== */
+#projects {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 90vw;
+    height: 240px;
+    align-items: flex-end;
+}
+
+/* Project Card Styling */
+.project-card {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 8px 12px;
+    width: auto;
+    text-align: center;
+    color: #ffffff;
+    border-color: rgba(255, 215, 0, 0.4);
+    width: clamp(250px, 30vw, 250px); /* Responsive width: min 150px, max 250px */
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    height: 50px;
+    transition: height 0.4s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+
+
+.project-card h3 {
+    margin: 0;
+    font-size: clamp(0.8rem, 2vw, 1.2rem); /* Adjust the minimum, responsive, and maximum sizes */
+    color: white;
+    align-self: center;
+}
+
+.project-card p {
+    font-size: 0.75rem;
+    font-size: clamp(0.25rem, 2vw, 0.75rem); /* Adjust the minimum, responsive, and maximum sizes */
+    display: none;
+    transition: opacity 0.3s ease;
+}
+
+.project-card a {
+    display: none;
+    padding: 4px 8px;
+    font-size: 0.7em;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Expand project card and reveal content on hover */
+.project-card:hover {
+    height: 200px;
+    border-color: rgba(255, 215, 0, 0.4);
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2), 0 6px 14px rgba(0, 0, 0, 0.3); /* Soft glow on hover */
+}
+
+.project-card:hover p,
+.project-card:hover a {
+    display: inline-flex;
+    opacity: 1;
+    border-color: rgba(255, 215, 0, 0.4);
+
+}
+
+/* ===========================
+   Carousel Section
+   =========================== */
+#carousel-container {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: clamp(250px, 30vw, 350px); /* Responsive width: min 150px, max 250px */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1;
+}
+
+#carousel {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+
+.carousel-item {
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+
+.carousel-item.active {
+    display: flex;
+}
+
+.carousel-arrow {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 24px;
+    cursor: pointer;
+    border-color: rgba(255, 215, 0, 0.4);
+    transition: color 0.3s;
+    z-index: 2;
+}
+
+.carousel-arrow:hover {
+    color: rgba(255, 215, 0, 0.8);
+}
+
+/* Carousel Dots */
+.carousel-dots {
+    position: absolute;
+    bottom: -20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 5px;
+}
+
+.carousel-dots button {
+    all: unset;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.carousel-dots button.active {
+    background-color: rgba(255, 215, 0, 0.8);
+}
+
+/* ===========================
+   Social Media Section
+   =========================== */
+#social-media {
+    position: absolute;
+    bottom: 2%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    display: flex;
+    gap: 15px;
+}
+
+.social-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.social-icon:hover {
+    transform: scale(2.2);
+    box-shadow: 0 5px 10px rgba(255, 215, 0, 0.4), 0 3px 7px rgba(0, 0, 0, 0.3);
+}
+
+/* ===========================
+   Toggle Switch
+   =========================== */
+   #toggle-switch {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    z-index: 10;
+    padding: 2px;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+#toggle-switch:hover {
+    opacity: 1;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 34px;
+    height: 16px;
+    border: 2px solid #ccc;
+    border-radius: 16px;
+    background-color: transparent;
+    transition: border-color 0.3s ease;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: transparent;
+    border-radius: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    left: 2px;
+    top: 1px;
+    background-color: white;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+}
+
+input:checked + .slider {
+    border: none;
+    border-color: rgba(255, 215, 0, 0.4);
+    background-color: rgba(255, 215, 0, 0.4);
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.5), 0 0 15px rgba(255, 215, 0, 0.3), 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+input:checked + .slider:before {
+    transform: translateX(18px);
+    border-color: rgba(255, 215, 0, 0.4);
+}
+
+.slider.round {
+    border-radius: 16px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* Adjustments for smaller screens */
+@media (max-width: 768px) {
+    #toggle-switch {
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .switch {
+        width: 28px;
+        height: 12px;
+    }
+
+    .slider:before {
+        height: 8px;
+        width: 8px;
+        left: 1px;
+        top: 1px;
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(14px);
+    }
+}
+
+/* Adjustments for larger screens */
+@media (min-width: 1200px) {
+    #toggle-switch {
+        bottom: 20px;
+        right: 20px;
+    }
+
+    .switch {
+        width: 40px;
+        height: 20px;
+    }
+
+    .slider:before {
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        top: 2px;
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(20px);
+    }
+}
+
+
+
+/* Button Container */
+.button-container {
+    display: flex;
+    justify-content: center;
+    display: none;
+    flex-wrap: wrap;
+    gap: 3px; /* Smaller gap between buttons */
+    margin-top: auto; /* Pushes the container to the bottom */
+    border-color: rgba(255, 215, 0, 0.4); /* Subtle golden border */
+    
+}
+
+
+.project-card:hover .button-container {
+    display: block;
+    transition: opacity 0.3s ease 0.2s, visibility 0.3s ease 0.2s; /* Matching transition */
+}
+
+.button-container a:hover {
+    border-color: rgba(255, 215, 0, 0.4); /* Subtle golden border */
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2), 0 6px 14px rgba(0, 0, 0, 0.3); /* Soft glow on hover */
+}

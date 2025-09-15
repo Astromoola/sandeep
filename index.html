@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Me - Planets and Stars</title>
+
+    <!-- External Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600&display=swap">
+    <link rel="manifest" href="/site.webmanifest">
+<link rel="apple-touch-icon" href="/favicons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
+<link rel="icon" href="/favicons/favicon.ico">
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<body>
+    
+    <!-- Toggle Switch Section -->
+    <!-- This toggle switch could be used for various interactive features like showing planet names -->
+    <div id="toggle-switch">
+        <label class="switch">
+            <input type="checkbox" id="toggle-names">
+            <span class="slider round"></span>
+        </label>
+    </div>
+
+    <!-- Intro Section -->
+    <!-- The main welcome message with a brief intro about you -->
+    <div id="intro">
+        <h1>Welcome to My Space</h1>
+    </br> 
+        <p>I'm Sandeep, an explorer of the mystical and a software developer by profession. </p>
+        <p> Check out my works below</p>
+    </div>
+
+    <!-- Project Cards Carousel Section -->
+    <!-- Carousel with project cards for showcasing your works, with navigation arrows and dot indicators -->
+    <div id="carousel-container">
+        <!-- Left arrow for navigation -->
+        <button class="carousel-arrow left" onclick="prevSlide()">&#10094;</button>
+        
+        <!-- Carousel wrapper -->
+        <div id="carousel">
+
+             <!-- Project Card 1 -->
+             <div class="carousel-item project-card">
+                <h3>Tarot</h3>
+                <p>Transform your device into a personal Tarot deck – explore spreads, shuffle, draw, and interpret cards just like a real Tarot experience, anytime, anywhere</p>
+                <div class="button-container">
+                    <a href="https://tarot.astromoola.com/" target="_blank">Website</a>
+                </div>
+            </div>
+            <!-- End of Project Card 1 -->
+            
+            <!-- Project Card 2 -->
+            <div class="carousel-item project-card">
+                <h3>Panchapakshi</h3>
+                <p>A method by Sri Agasthya mahamuni to elect a good time based on our Biorhythms.</p>
+                <div class="button-container">
+                    <a href="https://panchapakshi.astromoola.com" target="_blank">Website</a>
+                   <!--  <a href="https://github.com/vsandeepnaidu" target="_blank">GitHub</a> -->
+                    <a href="https://chatgpt.com/g/g-UvFrNtp6v-panchapakshi" target="_blank">ChatGPT</a>
+                </div>
+            </div>
+            <!-- End of Project Card 2 -->
+
+           
+
+            <!-- Project Card 2
+            <div class="carousel-item project-card">
+                <h3>Lucky Symbol Predictor</h3>
+                <p>A meticulously researched Vedic astrology project that consolidates various astrological methods.</p>
+                <div class="button-container">
+                    <a href="#" target="_blank">Coming Soon</a>
+                </div>
+            </div>
+           End of Project Card 2 -->
+
+            <!-- Project Card 4 -->
+            <div class="carousel-item project-card">
+                <h3>NavyaMandala</h3>
+                <p>A comprehensive Vedic astrology app offering detailed charts, Panchanga, Dasha analysis, and more.</p>
+                <div class="button-container">
+                    <a href="https://play.google.com/store/apps/details?id=com.astromoola.navyamandala" target="_blank">Google Play</a>
+                </div>
+            </div>
+            <!-- End of Project Card 4 -->
+
+            <!-- Project Card 5 -->
+            <div class="carousel-item project-card">
+                <h3>Stellar Manifestation</h3>
+                <p>A meditation and manifestation app blending astrology with soundscapes and raga-based sessions.</p>
+                <div class="button-container">
+                    <a href="https://play.google.com/store/apps/details?id=com.astromoola.stellar_manifestation_app" target="_blank">Google Play</a>
+                    <a href="https://apps.apple.com/us/app/stellar-manifestation/id6746156274" target="_blank">App Store</a>
+                </div>
+            </div>
+            <!-- End of Project Card 5 -->
+
+            <!-- Project Card 6 -->
+            <div class="carousel-item project-card">
+                <h3>Book: Anuguna Tara Paddati</h3>
+                <p>My published work on astrology exploring the Anuguna Tara system in depth.</p>
+                <div class="button-container">
+                    <a href="https://amzn.in/d/6NVpv1M" target="_blank">Amazon</a>
+                </div>
+            </div>
+            <!-- End of Project Card 6 -->
+
+            <!-- Project Card 7 -->
+            <div class="carousel-item project-card">
+                <h3>Podcasts</h3>
+                <p>Listen to my podcasts where I share insights on astrology, spirituality, and manifestation practices.</p>
+                <div class="button-container">
+                    <a href="https://tr.ee/geYlsUTexJ" target="_blank">Listen</a>
+                </div>
+            </div>
+            <!-- End of Project Card 7 -->
+            
+        </div>
+        <!-- End of Carousel Wrapper -->
+        
+        <!-- Right arrow for navigation -->
+        <button class="carousel-arrow right" onclick="nextSlide()">&#10095;</button>
+        
+        <!-- Carousel Dot Indicators -->
+        <div class="carousel-dots" id="carousel-dots"></div>
+    </div>
+    <!-- End of Project Cards Carousel Section -->
+
+    <!-- Social Media Icons Section -->
+    <!-- A section for social media links with icons for quick access to profiles -->
+    <div id="social-media">
+        <!-- Instagram Icon with Link -->
+        <a href="https://www.instagram.com/isandeepvenkatesh/" target="_blank">
+            <div class="social-icon" style="background-image: url('icons/instagram.png');"></div>
+        </a>
+        <!-- Facebook Icon with Link -->
+        <a href="https://www.facebook.com/vsandeepnaidu" target="_blank">
+            <div class="social-icon" style="background-image: url('icons/facebook.png');"></div>
+        </a>
+        <!-- LinkedIn Icon with Link -->
+        <a href="https://www.linkedin.com/in/vsandeepnaidu/" target="_blank">
+            <div class="social-icon" style="background-image: url('icons/linkedin.png');"></div>
+        </a>
+        <!-- GitHub Icon with Link -->
+        <a href="https://github.com/vsandeepnaidu" target="_blank">
+            <div class="social-icon" style="background-image: url('icons/github.png');"></div>
+        </a>
+    </div>
+    <!-- End of Social Media Icons Section -->
+
+    <!-- JavaScript Libraries and Scripts -->
+    <!-- Three.js for 3D animations and custom app.js for carousel and animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@18.6.4/dist/tween.umd.js"></script>
+    <script src="app.js"></script>
+    
+</body>
+</html>
+
+
