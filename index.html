@@ -2,192 +2,197 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Me - Planets and Stars</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a14">
+    <title>Sandeep Venkatesh — astrologer & technologist</title>
+    <meta name="description" content="Vedic astrology, software, and the space between. Apps, books, and field notes from Sandeep Venkatesh.">
 
-    <!-- External Stylesheets -->
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600&display=swap">
+    <meta property="og:title" content="Sandeep Venkatesh — astrologer & technologist">
+    <meta property="og:description" content="Vedic astrology, software, and the space between.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sandeep.astromoola.com/">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,700;1,9..144,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="styles.css?v=2026-05-21-6">
+
     <link rel="manifest" href="/site.webmanifest">
-<link rel="apple-touch-icon" href="/favicons/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
-<link rel="icon" href="/favicons/favicon.ico">
+    <link rel="apple-touch-icon" href="/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
+    <link rel="icon" href="/favicons/favicon.ico">
 </head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <body>
-    
-    <!-- Toggle Switch Section -->
-    <!-- This toggle switch could be used for various interactive features like showing planet names -->
-    <div id="toggle-switch">
-        <label class="switch">
-            <input type="checkbox" id="toggle-names">
-            <span class="slider round"></span>
-        </label>
+    <canvas id="cosmos"></canvas>
+    <div class="aurora" aria-hidden="true">
+        <div class="aurora-layer aurora-violet"></div>
+        <div class="aurora-layer aurora-cyan"></div>
+        <div class="aurora-layer aurora-magenta"></div>
+        <div class="vignette"></div>
+        <div class="grain"></div>
     </div>
 
-    <!-- Intro Section -->
-    <!-- The main welcome message with a brief intro about you -->
-    <div id="intro">
-        <h1>Welcome to My Space</h1>
-    </br> 
-        <p>I'm Sandeep, an explorer of the mystical and a software developer by profession. </p>
-        <p> Check out my works below</p>
-    </div>
-
-    <!-- Project Cards Carousel Section -->
-    <!-- Carousel with project cards for showcasing your works, with navigation arrows and dot indicators -->
-    <div id="carousel-container">
-        <!-- Left arrow for navigation -->
-        <button class="carousel-arrow left" onclick="prevSlide()">&#10094;</button>
-        
-        <!-- Carousel wrapper -->
-        <div id="carousel">
-
-            <!-- Project Card 1 -->
-            <div class="carousel-item project-card">
-                <h3>Tarot</h3>
-                <p>Transform your device into a personal Tarot deck – explore spreads, shuffle, draw, and interpret cards just like a real Tarot experience, anytime, anywhere</p>
-                <div class="button-container">
-                    <a href="https://tarot.astromoola.com/" target="_blank">Website</a>
-                </div>
-            </div>
-            <!-- End of Project Card 1 -->
-
-            <!-- Project Card 2 -->
-            <div class="carousel-item project-card">
-                <h3>Sagar Ephemeris</h3>
-                <p>My Sagar Ephemeris book and reference for astrological work.</p>
-                <div class="button-container">
-                    <a href="https://books.astromoola.com/sagarephemeris/" target="_blank">Read</a>
-                </div>
-            </div>
-            <!-- End of Project Card 2 -->
-
-            <!-- Project Card 3 -->
-            <div class="carousel-item project-card">
-                <h3>Muhurtha</h3>
-                <p>Explore muhurtha resources and timing tools for auspicious planning.</p>
-                <div class="button-container">
-                    <a href="https://muhurtha.astromoola.com/" target="_blank">Website</a>
-                </div>
-            </div>
-            <!-- End of Project Card 3 -->
-            
-
-           
-
-            <!-- Project Card 2
-            <div class="carousel-item project-card">
-                <h3>Lucky Symbol Predictor</h3>
-                <p>A meticulously researched Vedic astrology project that consolidates various astrological methods.</p>
-                <div class="button-container">
-                    <a href="#" target="_blank">Coming Soon</a>
-                </div>
-            </div>
-           End of Project Card 2 -->
-
-            <!-- Project Card 4 -->
-            <div class="carousel-item project-card">
-                <h3>Navya Mandala</h3>
-                <p>A comprehensive Vedic astrology app offering detailed charts, Panchanga, Dasha analysis, and more.</p>
-                <div class="button-container">
-                    <a href="https://play.google.com/store/apps/details?id=com.astromoola.navyamandala" target="_blank">Google Play</a>
-                </div>
-            </div>
-            <!-- End of Project Card 4 -->
-
-            <!-- Project Card 5 -->
-            <div class="carousel-item project-card">
-                <h3>Stellar Manifestation</h3>
-                <p>A meditation and manifestation app blending astrology with soundscapes and raga-based sessions.</p>
-                <div class="button-container">
-                    <a href="https://play.google.com/store/apps/details?id=com.astromoola.stellar_manifestation_app" target="_blank">Google Play</a>
-                    <a href="https://apps.apple.com/us/app/stellar-manifestation/id6746156274" target="_blank">App Store</a>
-                </div>
-            </div>
-            <!-- End of Project Card 5 -->
-
-            <!-- Project Card 6 -->
-            <div class="carousel-item project-card">
-                <h3>Anuguna Tara Paddati</h3>
-                <p>My published work on astrology exploring the Anuguna Tara system in depth.</p>
-                <div class="button-container">
-                    <a href="https://amzn.in/d/6NVpv1M" target="_blank">Amazon</a>
-                </div>
-            </div>
-            <!-- End of Project Card 6 -->
-
-            <!-- Project Card 7 -->
-            <div class="carousel-item project-card">
-                <h3>Podcasts</h3>
-                <p>Listen to my podcasts where I share insights on astrology, spirituality, and manifestation practices.</p>
-                <div class="button-container">
-                    <a href="https://tr.ee/geYlsUTexJ" target="_blank">Listen</a>
-                </div>
-            </div>
-            <!-- End of Project Card 7 -->
-
-            <!-- Project Card 8 -->
-            <div class="carousel-item project-card">
-                <h3>Blog</h3>
-                <p>Explore my blog where I share thoughts, research, and updates on astrology, spirituality, and personal insights.</p>
-                <div class="button-container">
-                    <a href="https://infantseer.blogspot.com/" target="_blank">Read Blog</a>
-                </div>
-            </div>
-            <!-- End of Project Card 8 -->
-            
-            <!-- Project Card 2 -->
-            <div class="carousel-item project-card">
-                <h3>Panchapakshi</h3>
-                <p>A method by Sri Agasthya mahamuni to elect a good time based on our Biorhythms.</p>
-                <div class="button-container">
-                    <a href="https://panchapakshi.astromoola.com" target="_blank">Website</a>
-                   <!--  <a href="https://github.com/vsandeepnaidu" target="_blank">GitHub</a> -->
-                    <a href="https://chatgpt.com/g/g-UvFrNtp6v-panchapakshi" target="_blank">ChatGPT</a>
-                </div>
-            </div>
-            <!-- End of Project Card 2 -->
-            
-        </div>
-        <!-- End of Carousel Wrapper -->
-        
-        <!-- Right arrow for navigation -->
-        <button class="carousel-arrow right" onclick="nextSlide()">&#10095;</button>
-        
-        <!-- Carousel Dot Indicators -->
-        <div class="carousel-dots" id="carousel-dots"></div>
-    </div>
-    <!-- End of Project Cards Carousel Section -->
-
-    <!-- Social Media Icons Section -->
-    <!-- A section for social media links with icons for quick access to profiles -->
-    <div id="social-media">
-        <!-- Instagram Icon with Link -->
-        <a href="https://www.instagram.com/isandeepvenkatesh/" target="_blank">
-            <div class="social-icon" style="background-image: url('icons/instagram.png');"></div>
+    <header class="nav">
+        <a href="#" class="brand">
+            <span class="brand-mark">✺</span>
+            <span class="brand-name">astromoola</span>
         </a>
-        <!-- Facebook Icon with Link -->
-        <a href="https://www.facebook.com/vsandeepnaidu" target="_blank">
-            <div class="social-icon" style="background-image: url('icons/facebook.png');"></div>
-        </a>
-        <!-- LinkedIn Icon with Link -->
-        <a href="https://www.linkedin.com/in/vsandeepnaidu/" target="_blank">
-            <div class="social-icon" style="background-image: url('icons/linkedin.png');"></div>
-        </a>
-        <!-- GitHub Icon with Link -->
-        <a href="https://github.com/vsandeepnaidu" target="_blank">
-            <div class="social-icon" style="background-image: url('icons/github.png');"></div>
-        </a>
-    </div>
-    <!-- End of Social Media Icons Section -->
+        <nav class="nav-links" aria-label="Primary">
+            <a href="#works">works</a>
+            <a href="#words">words</a>
+            <a href="#voice">voice</a>
+            <a href="#connect">connect</a>
+        </nav>
+    </header>
 
-    <!-- JavaScript Libraries and Scripts -->
-    <!-- Three.js for 3D animations and custom app.js for carousel and animations -->
+    <main>
+        <section class="hero" id="top">
+            <div class="ticker" id="ticker" aria-live="polite">
+                <span class="ticker-dot"></span>
+                <span class="ticker-text" id="ticker-text">aligning the sky…</span>
+            </div>
+
+            <h1 class="hero-title">
+                <span class="line">An explorer of the</span>
+                <span class="line"><em>mystical</em>,</span>
+                <span class="line">written in code.</span>
+            </h1>
+
+            <p class="hero-sub">
+                I'm <span class="name">Sandeep</span> — a software developer and a student of Vedic astrology. I build small tools, write books, and listen to the sky.
+            </p>
+
+            <div class="hero-cues">
+                <a href="#works" class="cue-link">
+                    <span>see the works</span>
+                    <span class="cue-arrow">↓</span>
+                </a>
+            </div>
+        </section>
+
+        <section class="works" id="works">
+            <header class="section-head">
+                <span class="eyebrow">01 · works</span>
+                <h2>Things made under the same sky.</h2>
+                <p>Apps, books, and quiet experiments — each a small offering at the meeting of code and cosmos.</p>
+            </header>
+
+            <div class="bento">
+                <a class="card card-tarot" href="https://tarot.astromoola.com/" target="_blank" rel="noopener">
+                    <span class="card-glyph">✦</span>
+                    <span class="card-tag">app · web</span>
+                    <h3>Tarot</h3>
+                    <p>A pocket deck. Shuffle, draw, sit with the card.</p>
+                    <span class="card-cta">open <span class="arrow">→</span></span>
+                </a>
+
+                <a class="card card-sagar" href="https://books.astromoola.com/sagarephemeris/" target="_blank" rel="noopener" id="words">
+                    <span class="card-glyph">☉</span>
+                    <span class="card-tag">book</span>
+                    <h3>Sagar Ephemeris</h3>
+                    <p>The planets, year by year — a reference written for serious astrological work.</p>
+                    <span class="card-cta">read <span class="arrow">→</span></span>
+                </a>
+
+                <a class="card card-muhurtha" href="https://muhurtha.astromoola.com/" target="_blank" rel="noopener">
+                    <span class="card-glyph">☾</span>
+                    <span class="card-tag">web</span>
+                    <h3>Muhurtha</h3>
+                    <p>Time chosen with the sky in mind. Tools for auspicious moments.</p>
+                    <span class="card-cta">open <span class="arrow">→</span></span>
+                </a>
+
+                <a class="card card-navya" href="https://play.google.com/store/apps/details?id=com.astromoola.navyamandala" target="_blank" rel="noopener">
+                    <span class="card-glyph">✺</span>
+                    <span class="card-tag">android app</span>
+                    <h3>Navya Mandala</h3>
+                    <p>Charts, panchanga, dasha — Vedic astrology in your palm.</p>
+                    <span class="card-cta">google play <span class="arrow">→</span></span>
+                </a>
+
+                <div class="card card-stellar">
+                    <span class="card-glyph">✧</span>
+                    <span class="card-tag">ios · android</span>
+                    <h3>Stellar Manifestation</h3>
+                    <p>Ragas and ritual for the inner sky — guided sessions woven with astrology.</p>
+                    <span class="card-meta">
+                        <a class="meta-link" href="https://apps.apple.com/us/app/stellar-manifestation/id6746156274" target="_blank" rel="noopener">App Store <span class="arrow">→</span></a>
+                        <a class="meta-link" href="https://play.google.com/store/apps/details?id=com.astromoola.stellar_manifestation_app" target="_blank" rel="noopener">Google Play <span class="arrow">→</span></a>
+                    </span>
+                </div>
+
+                <a class="card card-anuguna" href="https://amzn.in/d/6NVpv1M" target="_blank" rel="noopener">
+                    <span class="card-glyph">⋆</span>
+                    <span class="card-tag">book</span>
+                    <h3>Anuguna Tara Paddati</h3>
+                    <p>A published work exploring the Anuguna Tara system in depth.</p>
+                    <span class="card-cta">amazon <span class="arrow">→</span></span>
+                </a>
+
+                <div class="card card-pakshi">
+                    <span class="card-glyph">❋</span>
+                    <span class="card-tag">web · gpt</span>
+                    <h3>Panchapakshi</h3>
+                    <p>Five birds, five elements. Sri Agasthya's method for reading the moment's mood.</p>
+                    <span class="card-meta">
+                        <a class="meta-link" href="https://panchapakshi.astromoola.com" target="_blank" rel="noopener">Website <span class="arrow">→</span></a>
+                        <a class="meta-link" href="https://chatgpt.com/g/g-UvFrNtp6v-panchapakshi" target="_blank" rel="noopener">ChatGPT <span class="arrow">→</span></a>
+                    </span>
+                </div>
+
+                <a class="card card-pod" href="https://tr.ee/geYlsUTexJ" target="_blank" rel="noopener" id="voice">
+                    <span class="card-glyph">⟁</span>
+                    <span class="card-tag">podcast</span>
+                    <h3>Podcasts</h3>
+                    <p>Conversations on astrology, spirit, and the practice of paying attention.</p>
+                    <span class="card-cta">listen <span class="arrow">→</span></span>
+                </a>
+
+                <a class="card card-blog" href="https://infantseer.blogspot.com/" target="_blank" rel="noopener">
+                    <span class="card-glyph">✎</span>
+                    <span class="card-tag">writing</span>
+                    <h3>Field Notes</h3>
+                    <p>Thoughts, research, and quiet updates from the blog.</p>
+                    <span class="card-cta">read <span class="arrow">→</span></span>
+                </a>
+            </div>
+        </section>
+
+        <section class="connect" id="connect">
+            <header class="section-head">
+                <span class="eyebrow">02 · connect</span>
+                <h2>If anything here resonates, say hello.</h2>
+                <p>Letters, questions, collaborations — all welcome.</p>
+            </header>
+
+            <div class="social">
+                <a class="social-link" href="https://www.instagram.com/isandeepvenkatesh/" target="_blank" rel="noopener" aria-label="Instagram">
+                    <img src="icons/instagram.png" alt="">
+                    <span>instagram</span>
+                </a>
+                <a class="social-link" href="https://www.linkedin.com/in/vsandeepnaidu/" target="_blank" rel="noopener" aria-label="LinkedIn">
+                    <img src="icons/linkedin.png" alt="">
+                    <span>linkedin</span>
+                </a>
+                <a class="social-link" href="https://github.com/vsandeepnaidu" target="_blank" rel="noopener" aria-label="GitHub">
+                    <img src="icons/github.png" alt="">
+                    <span>github</span>
+                </a>
+                <a class="social-link" href="https://www.facebook.com/vsandeepnaidu" target="_blank" rel="noopener" aria-label="Facebook">
+                    <img src="icons/facebook.png" alt="">
+                    <span>facebook</span>
+                </a>
+            </div>
+
+            <footer class="foot">
+                <span class="foot-mark">✺</span>
+                <span class="foot-text">written under a moving sky · <a href="https://astromoola.com" target="_blank" rel="noopener">astromoola.com</a></span>
+            </footer>
+        </section>
+    </main>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@18.6.4/dist/tween.umd.js"></script>
-    <script src="app.js"></script>
-    
+    <script src="app.js?v=2026-05-21-6"></script>
 </body>
 </html>

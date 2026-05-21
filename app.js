@@ -1,442 +1,405 @@
-// ---------------------------
-// Scene Setup and Initialization
-// ---------------------------
+// ============================================================
+// Cosmos — layered starfield, planets in depth, mouse parallax,
+// scroll-aware camera. Twilight/aurora cinematic background.
+// ============================================================
 
+const canvas = document.getElementById('cosmos');
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+scene.fog = new THREE.FogExp2(0x07071a, 0.012);
+
+const camera = new THREE.PerspectiveCamera(
+    60,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    3000
+);
+camera.position.set(0, 0, 42);
+
+const renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: true,
+    alpha: true,
+    powerPreference: 'high-performance'
+});
 renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-camera.position.z = 15;
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x000000, 0);
 
-// ---------------------------
-// Lighting
-// ---------------------------
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-scene.add(ambientLight);
+// ------------------------------------------------------------
+// Lighting — the sun is the source. Everything else is lit by it.
+// ------------------------------------------------------------
+const ambient = new THREE.AmbientLight(0xb8b3e6, 0.25);
+scene.add(ambient);
 
-const pointLight = new THREE.PointLight(0xffffff, 0.6);
-pointLight.position.set(10, 10, 10);
-scene.add(pointLight);
+// The sun-light follows the sun's position each frame
+const sunLight = new THREE.PointLight(0xfff4d6, 2.2, 200, 1.4);
+scene.add(sunLight);
 
-const pointLight2 = new THREE.PointLight(0xffffff, 0.5);
-pointLight2.position.set(-10, -10, -10);
-scene.add(pointLight2);
+// ------------------------------------------------------------
+// Texture loading
+// ------------------------------------------------------------
+const tex = new THREE.TextureLoader();
+const earthTex   = tex.load('renders/earth_texture_map_1000px.jpg');
+const moonTex    = tex.load('renders/moonmap2k.jpg');
+const jupiterTex = tex.load('renders/jupiter2_1k.jpg');
+const saturnTex  = tex.load('renders/2k_saturn.jpg');
+const marsTex    = tex.load('renders/2k_mars.jpg');
+const mercuryTex = tex.load('renders/mercurybump.jpg');
+const venusTex   = tex.load('renders/venusbump.jpg');
+const sunTex     = tex.load('renders/sunmap.jpg');
+const ringTex    = tex.load('renders/saturnringpattern.jpg');
+const glowTex    = tex.load('renders/sp2.png');
 
-// ---------------------------
-// Texture Loader and Planet Textures
-// ---------------------------
-
-const textureLoader = new THREE.TextureLoader();
-const earthTexture = textureLoader.load("renders/earth_texture_map_1000px.jpg");
-const earthBumpMap = textureLoader.load("renders/earth_texture_map_1000px.jpg");
-const moonTexture = textureLoader.load("renders/moonmap2k.jpg");
-const moonBumpMap = textureLoader.load("renders/moonmap2k.jpg");
-const jupiterTexture = textureLoader.load("renders/jupiter2_1k.jpg");
-const saturnTexture = textureLoader.load("renders/2k_saturn.jpg");
-const marsBumpMap = textureLoader.load("renders/2k_mars.jpg");
-const mercuryBumpMap = textureLoader.load("renders/mercurybump.jpg");
-const venusBumpMap = textureLoader.load("renders/venusbump.jpg");
-const sunBumpMap = textureLoader.load("renders/sunmap.jpg");
-const saturnBumpMap = textureLoader.load('renders/2k_saturn.jpg');
-
-// ---------------------------
-// Planet Colors and Creation Function
-// ---------------------------
-
-const planetColors = {
-    sun: 0xffa500,
-    moon: 0xffffff,
-    mercury: 0x66ff66,
-    venus: 0xff99ff,
-    mars: 0xff3333,
-    jupiter: 0xffcc00,
-    saturn: 0x9999ff,
-    rahu: 0x000000,
-    ketu: 0x000000
-};
-
-function createPlanet(size, color, texture = null, bumpMap = null) {
-    const geometry = new THREE.SphereGeometry(size, 64, 64);
-    const materialOptions = { color, roughness: 0.7, metalness: 0.1 };
-
-    if (texture) materialOptions.map = texture;
-    if (bumpMap) materialOptions.bumpMap = bumpMap, materialOptions.bumpScale = 0.002;
-
-    const material = new THREE.MeshStandardMaterial(materialOptions);
-    return new THREE.Mesh(geometry, material);
-}
-
-// ---------------------------
-// Planet Creation and Glow Function
-// ---------------------------
-
-function createGlow(planet, glowColor, sizeMultiplier) {
-    const glowTexture = textureLoader.load("renders/sp2.png");
-    const glowMaterial = new THREE.SpriteMaterial({
-        map: glowTexture,
-        color: glowColor,
-        transparent: true,
-        opacity: 0.5,
-        blending: THREE.AdditiveBlending
+// ------------------------------------------------------------
+// Planet factory
+// ------------------------------------------------------------
+function makePlanet({ size, map, emissive = 0x000000, emissiveIntensity = 0, roughness = 0.85 }) {
+    const geom = new THREE.SphereGeometry(size, 64, 64);
+    const mat = new THREE.MeshStandardMaterial({
+        map,
+        roughness,
+        metalness: 0.05,
+        emissive,
+        emissiveIntensity
     });
-    const glow = new THREE.Sprite(glowMaterial);
-    glow.scale.set(sizeMultiplier, sizeMultiplier, 1);
-    planet.add(glow);
+    return new THREE.Mesh(geom, mat);
 }
 
-// ---------------------------
-// Creating Planets and Adding them to the Scene
-// ---------------------------
+// ------------------------------------------------------------
+// Build the cosmos — earth-centred, sun is the only luminous body
+// ------------------------------------------------------------
+const cosmos = new THREE.Group();
+// Tilt the orbital plane toward the viewer (orrery-style) and drop it
+// below the headline so the system isn't pasted across the title.
+cosmos.rotation.x = -0.45;
+cosmos.rotation.z = 0.06;
+cosmos.position.y = -12;
+scene.add(cosmos);
 
-const sun = createPlanet(0.7, planetColors.sun, sunBumpMap);
-const earth = createPlanet(1, planetColors.earth, earthTexture, earthBumpMap);
-const moon = createPlanet(0.3, planetColors.moon, moonTexture, moonBumpMap);
-const mercury = createPlanet(0.3, planetColors.mercury, mercuryBumpMap);
-const venus = createPlanet(0.35, planetColors.venus, venusBumpMap);
-const mars = createPlanet(0.4, planetColors.mars, marsBumpMap);
-const jupiter = createPlanet(0.7, planetColors.jupiter, jupiterTexture);
-const saturn = createPlanet(0.6, planetColors.saturn, saturnTexture, saturnBumpMap);
-const rahu = createPlanet(0.3, planetColors.rahu);
-const ketu = createPlanet(0.3, planetColors.ketu);
+// Earth sits at the centre (Vedic geocentric). Everything else orbits.
+const earth = makePlanet({ size: 1.1, map: earthTex });
+earth.position.set(0, 0, 0);
+cosmos.add(earth);
 
-scene.add(sun, earth, moon, mercury, venus, mars, jupiter, saturn, rahu, ketu);
+// Sun — the only luminous body. Use the texture itself as the emission
+// source so the sunmap render is visible while the sphere glows.
+const sun = new THREE.Mesh(
+    new THREE.SphereGeometry(1.05, 64, 64),
+    new THREE.MeshBasicMaterial({ map: sunTex })
+);
+cosmos.add(sun);
 
-// ---------------------------
-// Saturn's Ring
-// ---------------------------
+// Inner bodies (mercury, venus) librate around the sun's angle.
+// Mars stays within ~90° of sun. Jupiter and Saturn move freely.
+// All orbits live in the XZ plane around earth.
+const moon    = makePlanet({ size: 0.34, map: moonTex });
+const mercury = makePlanet({ size: 0.42, map: mercuryTex });
+const venus   = makePlanet({ size: 0.55, map: venusTex });
+const mars    = makePlanet({ size: 0.50, map: marsTex });
+const jupiter = makePlanet({ size: 1.20, map: jupiterTex });
+const saturn  = makePlanet({ size: 1.00, map: saturnTex });
+[moon, mercury, venus, mars, jupiter, saturn].forEach(p => cosmos.add(p));
 
-const saturnRingGeometry = new THREE.RingGeometry(0.8, 1.5, 64);
-const saturnRingMap = textureLoader.load("renders/saturnringpattern.jpg");
-const saturnRingMaterial = new THREE.MeshBasicMaterial({
-    color: 0xe5e4e2,
+// Saturn's ring
+const ringGeom = new THREE.RingGeometry(1.35, 2.2, 96);
+const ringPos = ringGeom.attributes.position;
+const ringUV = ringGeom.attributes.uv;
+for (let i = 0; i < ringPos.count; i++) {
+    const x = ringPos.getX(i);
+    const y = ringPos.getY(i);
+    const dist = Math.sqrt(x * x + y * y);
+    ringUV.setXY(i, (dist - 1.35) / (2.2 - 1.35), 0.5);
+}
+const ringMat = new THREE.MeshBasicMaterial({
+    map: ringTex,
+    color: 0xe5d5a8,
     side: THREE.DoubleSide,
     transparent: true,
-    bumpMap: saturnRingMap,
-    opacity: 0.7
+    opacity: 0.75
 });
-const saturnRing = new THREE.Mesh(saturnRingGeometry, saturnRingMaterial);
-saturnRing.rotation.x = Math.PI / 3;
-saturnRing.position.y = 0.04;
-saturn.add(saturnRing);
+const ring = new THREE.Mesh(ringGeom, ringMat);
+ring.rotation.x = Math.PI / 2.3;
+saturn.add(ring);
 
-// ---------------------------
-// Orbit Positions
-// ---------------------------
-
-const orbits = {
-    sun: 7,
-    mercury: 4,
-    venus: 5.2,
-    moon: 1.5,
-    mars: 8.5,
-    jupiter: 9.5,
-    saturn: 14.1,
-    rahu: 0.6,
-    ketu: 0.6
+// Orbit radii (around earth at origin)
+const orbit = {
+    moon:    4.5,
+    mercury: 7.5,
+    venus:   9.5,
+    sun:     13,
+    mars:    16,
+    jupiter: 22,
+    saturn:  30
 };
 
-// ---------------------------
-// Star Creation and Glow Effect
-// ---------------------------
+// Inclination for the moon's orbit
+const moonInclination = Math.PI / 8;
 
-function createStarWithGlow(starRadius) {
-    const starGeometry = new THREE.SphereGeometry(starRadius, 8, 8);
-    const starMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const star = new THREE.Mesh(starGeometry, starMaterial);
-    const glowTexture = textureLoader.load("renders/sp2.png");
-    const glowMaterial = new THREE.SpriteMaterial({
-        map: glowTexture,
-        color: 0xffffff,
-        transparent: true,
-        opacity: 0.7,
-        blending: THREE.AdditiveBlending
-    });
-    const glowSprite = new THREE.Sprite(glowMaterial);
-    glowSprite.scale.set(starRadius * 10, starRadius * 10, 1);
-    star.add(glowSprite);
-    return star;
-}
-
-function addStarsWithGlow() {
-    const starGroup = new THREE.Group();
-    for (let i = 0; i < 800; i++) {
-        const star = createStarWithGlow(0.3);
-        star.position.set(
-            (Math.random() - 0.5) * 2000,
-            (Math.random() - 0.5) * 2000,
-            (Math.random() - 0.5) * 2000
-        );
-        starGroup.add(star);
+// ------------------------------------------------------------
+// Layered starfields — depth via separate groups with parallax
+// ------------------------------------------------------------
+function buildStarLayer({ count, range, size, color, opacity }) {
+    const positions = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+        const r = range * (0.5 + Math.random() * 0.5);
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        positions[i * 3]     = r * Math.sin(phi) * Math.cos(theta);
+        positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+        positions[i * 3 + 2] = r * Math.cos(phi) - range * 0.2;
     }
-    scene.add(starGroup);
-}
-addStarsWithGlow();
-
-// ---------------------------
-// Planet Labels
-// ---------------------------
-
-function createTextLabel(text) {
-    const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d");
-    context.font = "30px Arial";
-    context.fillStyle = "white";
-    context.fillText(text, 0, 30);
-    const texture = new THREE.CanvasTexture(canvas);
-    const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
-    const sprite = new THREE.Sprite(spriteMaterial);
-    sprite.scale.set(1.5, 0.75, 1);
-    return sprite;
+    const geom = new THREE.BufferGeometry();
+    geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const mat = new THREE.PointsMaterial({
+        color,
+        size,
+        sizeAttenuation: true,
+        transparent: true,
+        opacity,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        map: glowTex
+    });
+    const points = new THREE.Points(geom, mat);
+    return points;
 }
 
-const planetLabels = {
-    sun: createTextLabel("Sun"),
-    earth: createTextLabel("Earth"),
-    moon: createTextLabel("Moon"),
-    mercury: createTextLabel("Mercury"),
-    venus: createTextLabel("Venus"),
-    mars: createTextLabel("Mars"),
-    jupiter: createTextLabel("Jupiter"),
-    saturn: createTextLabel("Saturn"),
-    rahu: createTextLabel("Rahu"),
-    ketu: createTextLabel("Ketu")
-};
+const starFar  = buildStarLayer({ count: 2200, range: 900, size: 1.8, color: 0xe8e6ff, opacity: 0.85 });
+const starMid  = buildStarLayer({ count: 900,  range: 500, size: 2.4, color: 0xc4b8ff, opacity: 0.9 });
+const starNear = buildStarLayer({ count: 280,  range: 250, size: 3.2, color: 0xfde68a, opacity: 0.95 });
+scene.add(starFar, starMid, starNear);
 
-sun.add(planetLabels.sun);
-earth.add(planetLabels.earth);
-moon.add(planetLabels.moon);
-mercury.add(planetLabels.mercury);
-venus.add(planetLabels.venus);
-mars.add(planetLabels.mars);
-jupiter.add(planetLabels.jupiter);
-saturn.add(planetLabels.saturn);
-rahu.add(planetLabels.rahu);
-ketu.add(planetLabels.ketu);
+// ------------------------------------------------------------
+// Mouse parallax + scroll-aware camera
+// ------------------------------------------------------------
+const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
 
-// Initially hide labels
-Object.values(planetLabels).forEach(label => label.visible = false);
-
-// ---------------------------
-// Toggle Planet Names
-// ---------------------------
-
-const toggleNamesCheckbox = document.getElementById("toggle-names");
-toggleNamesCheckbox.addEventListener("change", () => {
-    const showNames = toggleNamesCheckbox.checked;
-    Object.values(planetLabels).forEach(label => label.visible = showNames);
+window.addEventListener('pointermove', (e) => {
+    pointer.tx = (e.clientX / window.innerWidth - 0.5) * 2;
+    pointer.ty = (e.clientY / window.innerHeight - 0.5) * 2;
 });
 
-// ---------------------------
-// Carousel and Slide Navigation
-// ---------------------------
+let scrollY = 0;
+let scrollTarget = 0;
+window.addEventListener('scroll', () => {
+    scrollTarget = window.scrollY / Math.max(1, document.body.scrollHeight - window.innerHeight);
+}, { passive: true });
 
-const slides = document.querySelectorAll(".carousel-item");
-const dotsContainer = document.getElementById("carousel-dots");
-let currentSlide = 0;
+// ------------------------------------------------------------
+// Animation loop
+// ------------------------------------------------------------
+const clock = new THREE.Clock();
 
-slides.forEach((slide, index) => {
-    const dot = document.createElement("button");
-    dot.classList.add("dot");
-    dot.addEventListener("click", () => goToSlide(index));
-    dotsContainer.appendChild(dot);
-});
-
-function updateCarousel() {
-    slides.forEach((slide, index) => {
-        slide.classList.toggle("active", index === currentSlide);
-    });
-    const dots = document.querySelectorAll("#carousel-dots button");
-    dots.forEach((dot, index) => {
-        dot.classList.toggle("active", index === currentSlide);
-    });
-}
-
-function nextSlide() {
-    currentSlide = (currentSlide + 1) % slides.length;
-    updateCarousel();
-}
-
-function prevSlide() {
-    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-    updateCarousel();
-}
-
-function goToSlide(slideIndex) {
-    currentSlide = slideIndex;
-    updateCarousel();
-}
-
-updateCarousel();
-
-// ---------------------------
-// Animation Loop for Planet Orbits
-// ---------------------------
-
-let angle = 0;
-let sunAngle = 0;
-let moonAngle = 0;
-let nodeAngle = 0;
-
-
-let mercuryOffset = 0;
-let venusOffset = 0;
-let marsOffset = 0;
-
-
-
- // Define an inclination for Rahu and Ketu's orbits
- const rahuInclination = Math.PI / 6; // 30 degrees inclination (adjust as necessary)
- const ketuInclination = Math.PI / 6; // 30 degrees inclination (adjust as necessary)
- // Define inclination for the Moon's orbit and Rahu/Ketu's orbit
- const moonInclination = Math.PI / 6; // 30 degrees inclination for the Moon
- const nodeInclination = Math.PI / 6; // 30 degrees inclination for Rahu/Ketu
-
-
- // Orbit distances
-const moonOrbitRadius = orbits.moon;
-const nodeOrbitRadius = moonOrbitRadius; // Rahu/Ketu orbit same radius as Moon
 function animate() {
     requestAnimationFrame(animate);
+    const t = clock.getElapsedTime();
+    const dt = clock.getDelta();
 
-    angle += 0.01;
-    sunAngle += 0.01;
-    moonAngle -= 0.03;
-    nodeAngle += 0.007;
+    // smooth pointer
+    pointer.x += (pointer.tx - pointer.x) * 0.04;
+    pointer.y += (pointer.ty - pointer.y) * 0.04;
 
-    earth.rotation.y += 0.01;
+    // smooth scroll progress 0..1
+    scrollY += (scrollTarget - scrollY) * 0.06;
 
-    sun.position.set(Math.cos(sunAngle) * orbits.sun * -1, 0, Math.sin(sunAngle) * orbits.sun);
-    // Mercury stays within 28 degrees of Sun
-    mercuryOffset = Math.sin(sunAngle) * 0.5; // Keep Mercury close to Sun
-    mercury.position.set(Math.cos(sunAngle + mercuryOffset) * orbits.mercury * -1, 0, Math.sin(sunAngle + mercuryOffset) * orbits.mercury);
+    // ----- Geocentric orbits (Vedic style) — circles around earth at origin
+    // base angular velocity
+    const omega = t * 0.06;
 
-    // Venus stays within 47 degrees of Sun
-    venusOffset = Math.sin(sunAngle) * 0.8;
-    venus.position.set(Math.cos(sunAngle + venusOffset) * orbits.venus * -1, 0, Math.sin(sunAngle + venusOffset) * orbits.venus);
+    // Sun — anchor for the inner planets
+    const sunAngle = omega;
+    sun.position.set(Math.cos(sunAngle) * orbit.sun, 0, Math.sin(sunAngle) * orbit.sun);
+    sun.rotation.y += 0.004;
 
-    // Mars stays within 90 degrees of Sun
-    marsOffset = Math.sin(sunAngle) * 1.5;
-    mars.position.set(Math.cos(sunAngle + marsOffset) * orbits.mars * -1, 0, Math.sin(sunAngle + marsOffset) * orbits.mars);
+    // Mercury librates ±28° around the sun's direction
+    const mercuryAngle = sunAngle + Math.sin(t * 0.4) * (28 * Math.PI / 180);
+    mercury.position.set(Math.cos(mercuryAngle) * orbit.mercury, 0, Math.sin(mercuryAngle) * orbit.mercury);
+    mercury.rotation.y += 0.003;
 
-    // Jupiter and Saturn orbit freely
-    jupiter.position.set(Math.cos(angle * 0.8) * orbits.jupiter * -1, 0, Math.sin(angle * 0.8) * orbits.jupiter);
-    saturn.position.set(Math.cos(angle * 0.4) * orbits.saturn * -1, 0, Math.sin(angle * 0.4) * orbits.saturn);
-    saturn.rotation.y += 0.01
+    // Venus librates ±47° around the sun's direction
+    const venusAngle = sunAngle + Math.sin(t * 0.25) * (47 * Math.PI / 180);
+    venus.position.set(Math.cos(venusAngle) * orbit.venus, 0, Math.sin(venusAngle) * orbit.venus);
+    venus.rotation.y += 0.003;
 
-    // Rahu's position (revolving along y-axis)
-const rahuX = Math.cos(nodeAngle) * nodeOrbitRadius; // Horizontal movement (x-axis)
-const rahuY = 0; // Fixed along y-axis (no vertical movement)
-const rahuZ = Math.sin(nodeAngle) * nodeOrbitRadius; // Horizontal movement (z-axis)
+    // Mars wanders, biased toward the sun's hemisphere
+    const marsAngle = sunAngle * 0.55 + Math.sin(t * 0.15) * 0.9;
+    mars.position.set(Math.cos(marsAngle) * orbit.mars, 0, Math.sin(marsAngle) * orbit.mars);
+    mars.rotation.y += 0.0035;
 
-// Ketu's position (180 degrees apart from Rahu, revolving along the y-axis)
-const ketuX = Math.cos(nodeAngle + Math.PI) * nodeOrbitRadius; // Opposite horizontal movement (x-axis)
-const ketuY = 0; // Fixed along y-axis (same height as Rahu)
-const ketuZ = Math.sin(nodeAngle + Math.PI) * nodeOrbitRadius; // Opposite horizontal movement (z-axis)
+    // Jupiter and Saturn — independent, slow orbits
+    const jupiterAngle = omega * 0.45 + 1.7;
+    jupiter.position.set(Math.cos(jupiterAngle) * orbit.jupiter, 0, Math.sin(jupiterAngle) * orbit.jupiter);
+    jupiter.rotation.y += 0.0025;
 
-// Update Rahu and Ketu positions
-rahu.position.set(rahuX, rahuY, rahuZ);
-ketu.position.set(ketuX, ketuY, ketuZ);
+    const saturnAngle = omega * 0.22 + 3.9;
+    saturn.position.set(Math.cos(saturnAngle) * orbit.saturn, 0, Math.sin(saturnAngle) * orbit.saturn);
+    saturn.rotation.y += 0.002;
 
+    // Moon — inclined orbit close to earth (origin), faster
+    const moonAngle = omega * 4.2;
+    moon.position.set(
+        Math.cos(moonAngle) * orbit.moon,
+        Math.sin(moonAngle) * orbit.moon * Math.sin(moonInclination),
+        Math.sin(moonAngle) * orbit.moon * Math.cos(moonInclination)
+    );
+    moon.rotation.y += 0.005;
 
-    // Moon orbit: Should cross Rahu and Ketu at certain points (nodes)
-    moonAngle += 0.008; // Adjust speed for the Moon's orbit
+    // Earth slow spin
+    earth.rotation.y += 0.0025;
 
-    const moonX = Math.cos(moonAngle) * moonOrbitRadius;
-    const moonY = Math.sin(moonInclination) * Math.sin(moonAngle) * moonOrbitRadius;
-    const moonZ = Math.sin(moonAngle) * moonOrbitRadius;
+    // Move the sun light with the sun
+    sunLight.position.copy(sun.position);
 
-    // Update Moon position
-    moon.position.set(moonX, moonY, moonZ);
+    // Gentle ring breathing
+    if (ring) ring.rotation.z += 0.0008;
 
+    // starfield slow drift + parallax
+    starFar.rotation.y  += 0.00008;
+    starMid.rotation.y  += 0.00018;
+    starNear.rotation.y += 0.00038;
 
-        renderer.render(scene, camera);
+    starFar.position.x  = pointer.x * 4;
+    starFar.position.y  = -pointer.y * 4;
+    starMid.position.x  = pointer.x * 10;
+    starMid.position.y  = -pointer.y * 10;
+    starNear.position.x = pointer.x * 18;
+    starNear.position.y = -pointer.y * 18;
+
+    // camera drift on mouse, and pulls in slightly on scroll
+    const targetX = pointer.x * 3.5;
+    const targetY = -pointer.y * 2.5 + scrollY * 8;
+    const targetZ = 42 - scrollY * 6;
+    camera.position.x += (targetX - camera.position.x) * 0.05;
+    camera.position.y += (targetY - camera.position.y) * 0.05;
+    camera.position.z += (targetZ - camera.position.z) * 0.05;
+    camera.lookAt(0, -8 + scrollY * 4, 0);
+
+    // fade cosmos as we scroll past the hero
+    canvas.style.opacity = String(Math.max(0.35, 1 - scrollY * 0.85));
+
+    renderer.render(scene, camera);
 }
-
-
 animate();
 
-document.querySelectorAll('.project-card').forEach(card => {
+// ============================================================
+// Live cosmic ticker — weekday ruler + moon phase
+// (poetic, accurate-ish: weekday ruler is exact, phase is a
+// simple synodic approximation. Good enough for a sky line.)
+// ============================================================
+(function () {
+    const tickerText = document.getElementById('ticker-text');
+    if (!tickerText) return;
 
-    const buttons = card.querySelector('.button-container');
+    const dayRulers = [
+        { day: 'sunday',    ruler: 'the sun',    glyph: '☉' },
+        { day: 'monday',    ruler: 'the moon',   glyph: '☾' },
+        { day: 'tuesday',   ruler: 'mars',       glyph: '♂' },
+        { day: 'wednesday', ruler: 'mercury',    glyph: '☿' },
+        { day: 'thursday',  ruler: 'jupiter',    glyph: '♃' },
+        { day: 'friday',    ruler: 'venus',      glyph: '♀' },
+        { day: 'saturday',  ruler: 'saturn',     glyph: '♄' }
+    ];
 
-    // Initially hide the buttons
-   // buttons.style.display = 'none';
+    function moonPhase(date) {
+        // reference new moon: 2000-01-06 18:14 UTC
+        const ref = Date.UTC(2000, 0, 6, 18, 14, 0);
+        const synodic = 29.530588853;
+        const diff = (date.getTime() - ref) / 86400000;
+        const phase = ((diff % synodic) + synodic) % synodic / synodic;
+        if (phase < 0.03 || phase > 0.97) return { name: 'new moon',         glyph: '●' };
+        if (phase < 0.22)                  return { name: 'waxing crescent', glyph: '☽' };
+        if (phase < 0.28)                  return { name: 'first quarter',   glyph: '◐' };
+        if (phase < 0.47)                  return { name: 'waxing gibbous',  glyph: '◑' };
+        if (phase < 0.53)                  return { name: 'full moon',       glyph: '○' };
+        if (phase < 0.72)                  return { name: 'waning gibbous',  glyph: '◒' };
+        if (phase < 0.78)                  return { name: 'last quarter',    glyph: '◑' };
+        return { name: 'waning crescent', glyph: '☾' };
+    }
 
-    // Handle card expansion on click
-    card.addEventListener('click', () => {
-        if (!card.classList.contains('expanded')) {
-            card.classList.add('expanded');
-            buttons.style.display = 'flex';
-
-            // Show buttons after 500 ms
+    function render() {
+        const now = new Date();
+        const d = dayRulers[now.getDay()];
+        const m = moonPhase(now);
+        const lines = [
+            `${d.glyph} ${d.day} belongs to ${d.ruler}`,
+            `${m.glyph} ${m.name}`,
+            `${d.glyph} hora of ${d.ruler}`
+        ];
+        let i = 0;
+        tickerText.textContent = lines[i];
+        return setInterval(() => {
+            i = (i + 1) % lines.length;
+            tickerText.style.opacity = '0';
             setTimeout(() => {
-                
-                buttons.style.pointerEvents = 'auto'; // Activate the buttons
-            }, 100);
-        }
+                tickerText.textContent = lines[i];
+                tickerText.style.opacity = '1';
+            }, 300);
+        }, 4200);
+    }
+
+    tickerText.style.transition = 'opacity 0.3s ease';
+    render();
+})();
+
+// ============================================================
+// Card 3D tilt on pointer
+// ============================================================
+(function () {
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card) => {
+        let raf = null;
+        let rect = null;
+
+        const update = (e) => {
+            if (!rect) rect = card.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width;
+            const y = (e.clientY - rect.top) / rect.height;
+            const rotX = (0.5 - y) * 6;
+            const rotY = (x - 0.5) * 6;
+            if (raf) cancelAnimationFrame(raf);
+            raf = requestAnimationFrame(() => {
+                card.style.transform = `translateY(-4px) perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            });
+        };
+
+        const reset = () => {
+            rect = null;
+            if (raf) cancelAnimationFrame(raf);
+            card.style.transform = '';
+        };
+
+        card.addEventListener('pointerenter', () => { rect = card.getBoundingClientRect(); });
+        card.addEventListener('pointermove', update);
+        card.addEventListener('pointerleave', reset);
     });
+})();
 
-    // Handle mobile touch
-    card.addEventListener('touchend', () => {
-        if (!card.classList.contains('expanded')) {
-            card.classList.add('expanded');
-            buttons.style.display = 'flex';
+// ============================================================
+// Reveal on scroll
+// ============================================================
+(function () {
+    const targets = document.querySelectorAll('.card, .section-head, .social-link');
+    targets.forEach((el) => el.classList.add('reveal'));
 
-            // Show buttons after 500 ms
-            setTimeout(() => {
-                
-                buttons.style.pointerEvents = 'auto'; // Activate the buttons
-            }, 100);
-        }
-    });
+    if (!('IntersectionObserver' in window)) {
+        targets.forEach((el) => el.classList.add('in'));
+        return;
+    }
 
-    // Make buttons visible on hover for web
-    card.addEventListener('mouseover', () => {
-        if (!card.classList.contains('expanded')) {
-            buttons.style.display = 'flex';
-        }
-    });
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+            if (e.isIntersecting) {
+                e.target.classList.add('in');
+                io.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.12 });
 
-    // Hide buttons when hover is off
-    card.addEventListener('mouseleave', () => {
-        if (!card.classList.contains('expanded')) {
-            buttons.style.display = 'none';
-        }
-    });
-
-    // Handle clicks on the buttons
-    buttons.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent propagation to the card itself
-    });
-
-    buttons.addEventListener('touchend', (e) => {
-        e.stopPropagation(); // Prevent propagation to the card itself
-    });
-
-    // Collapse the card on clicking outside
-    document.addEventListener('click', (e) => {
-        if (!card.contains(e.target) && card.classList.contains('expanded')) {
-            card.classList.remove('expanded');
-           
-
-            // Hide buttons immediately
-            buttons.style.display = 'none';
-            buttons.style.pointerEvents = 'none';
-        }
-    });
-
-    // Collapse the card on touch outside
-    document.addEventListener('touchend', (e) => {
-        if (!card.contains(e.target) && card.classList.contains('expanded')) {
-            card.classList.remove('expanded');
-            
-
-            // Hide buttons immediately
-            buttons.style.display = 'none';
-            buttons.style.pointerEvents = 'none';
-        }
-    });
-});
-
+    targets.forEach((el) => io.observe(el));
+})();
